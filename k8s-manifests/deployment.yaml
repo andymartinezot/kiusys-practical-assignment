@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kiusys-app
+  namespace: kiusys
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kiusys
+  template:
+    metadata:
+      labels:
+        app: kiusys
+    spec:
+      containers:
+        - name: kiusys
+          image: amartinezot/kiusys:latest
+          ports:
+            - containerPort: 8080

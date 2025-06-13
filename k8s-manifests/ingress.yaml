@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kiusys-ingress
+  namespace: kiusys
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80, "HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: 'your-acm-certificate-arn'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/load-balancer-attributes: access_logs.s3.enabled=true,access_logs.s3.bucket=kiusystem-log-bucket,access_logs.s3.prefix=kiusys
+    alb.ingress.kubernetes.io/security-groups: sg-xxxx, nameOfSg1, nameOfSg2
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS-1-1-2017-01
+    alb.ingress.kubernetes.io/wafv2-acl-arn: arn:aws:wafv2:us-east-1:xxxxx:regional/webacl/xxxxxxx/3ab78708-85b0-49d3-b4e1-7a9615a6613b
+    external-dns.alpha.kubernetes.io/hostname: kiusys.amartinezot.com
+spec:
+  ingressClassName: alb
+  rules:
+    - host: kiusys.amartinezot.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kiusys-service
+                port:
+                  number: 8080

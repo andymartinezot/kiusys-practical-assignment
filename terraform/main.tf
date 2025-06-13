@@ -24,11 +24,3 @@ module "rds" {
   db_username     = var.db_username
   db_password     = var.db_password
 }
-
-module "alb" {
-  source          = "./modules/alb"
-  vpc_id          = module.vpc.vpc_id
-  public_subnets  = module.vpc.public_subnets
-  certificate_arn = var.acm_certificate_arn
-  domain_name     = var.domain_name
-}
