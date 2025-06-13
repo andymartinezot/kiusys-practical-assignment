@@ -106,3 +106,47 @@ chmod +x scripts/deploy_k8s_resources.sh
 - Ensure your EKS nodes or service account have IAM permissions to manage ALB and Route53 (if using DNS).
 
 ---
+
+## 🌍 How to Expose the Application Publicly with Route 53
+
+This project uses the [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller) and [ExternalDNS](https://github.com/kubernetes-sigs/external-dns) to expose the application via HTTPS using a custom domain (`kiusys.amartinezot.com`).
+
+### Steps to expose the app publicly:
+
+1. ✅ **Ensure Hosted Zone Exists**  
+   Make sure `amartinezot.com` is a public hosted zone in Route 53.
+
+2. ✅ **Use Ingress with ALB Annotations**  
+   Your Ingress must include annotations like:
+   ```yaml
+   alb.ingress.kubernetes.io/scheme: internet-facing
+   alb.ingress.kubernetes.io/certificate-arn: <your-acm-certificate-arn>
+   external-dns.alpha.kubernetes.io/hostname: kiusys.amartinezot.com
+   ```
+
+3. ✅ **ACM Certificate for HTTPS**  
+   Request or import an ACM certificate for `kiusys.amartinezot.com` in region `us-east-1`. Use DNS validation with Route 53.
+
+4. ✅ **Install ExternalDNS**  
+   Deploy `external-dns` to your cluster to automatically create DNS records in Route 53. ExternalDNS watches for Ingress annotations and syncs with Route 53.
+
+5. ✅ **IAM Permissions for ExternalDNS**  
+   Ensure ExternalDNS has permissions to manage Route 53 (either via IRSA or node IAM role). Example policy:
+   ```json
+   {
+     "Effect": "Allow",
+     "Action": [
+       "route53:ChangeResourceRecordSets",
+       "route53:ListHostedZones",
+       "route53:ListResourceRecordSets"
+     ],
+     "Resource": "*"
+   }
+   ```
+
+6. ✅ **Verify Access**
+   After deployment:
+   - Check Route 53 to see the `kiusys.amartinezot.com` record
+   - Visit `https://kiusys.amartinezot.com` in your browser
+
+This approach eliminates the need for manual Route 53 configuration while enabling secure, scalable public access via HTTPS.
