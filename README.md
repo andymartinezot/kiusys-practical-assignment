@@ -150,3 +150,29 @@ This project uses the [AWS Load Balancer Controller](https://kubernetes-sigs.git
    - Visit `https://kiusys.amartinezot.com` in your browser
 
 This approach eliminates the need for manual Route 53 configuration while enabling secure, scalable public access via HTTPS.
+
+## 🛢️ Example: Configure the Database
+
+After provisioning the RDS Aurora PostgreSQL cluster, you can run a script to create a sample schema and table.
+
+### Script: `scripts/configure_database.sh`
+
+This script:
+
+- Connects to the Aurora cluster using `psql`
+- Creates a `users` table inside a schema `app`
+- Inserts a sample user record
+- Prints out the contents
+
+### Usage
+
+```bash
+chmod +x scripts/configure_database.sh
+./scripts/configure_database.sh <rds-endpoint> <db-username> <db-name>
+```
+
+💡 Make sure:
+
+- `psql` is installed locally
+- You're connected to the VPC (e.g., via VPN or EC2 jump host)
+- The database is reachable from your network
